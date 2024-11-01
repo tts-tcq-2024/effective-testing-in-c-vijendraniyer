@@ -1,32 +1,37 @@
 #include <stdio.h>
 #include <assert.h>
 
-int alertFailureCount = 0;
+// Helper function to convert Fahrenheit to Celsius
+float fahrenheitToCelsius(float fahrenheit) {
+    return (fahrenheit - 32) * 5 / 9;
+}
 
-int networkAlertStub(float celcius) {
-    printf("ALERT: Temperature is %.1f celcius.\n", celcius);
-    // Return 200 for ok
-    // Return 500 for not-ok
-    // stub always succeeds and returns 200
+// Helper function to handle alert logging
+void logAlert(float celsius) {
+    printf("ALERT: Temperature is %.1f Celsius.\n", celsius);
+}
+
+// Function to send network alert
+int sendNetworkAlert(float celsius) {
+    logAlert(celsius);
+    // Return 200 for ok, 500 for not-ok. Stub always succeeds and returns 200.
     return 200;
 }
 
-void alertInCelcius(float farenheit) {
-    float celcius = (farenheit - 32) * 5 / 9;
-    int returnCode = networkAlertStub(celcius);
-    if (returnCode != 200) {
-        // non-ok response is not an error! Issues happen in life!
-        // let us keep a count of failures to report
-        // However, this code doesn't count failures!
-        // Add a test below to catch this bug. Alter the stub above, if needed.
-        alertFailureCount += 0;
-    }
+// Main alert function
+int alertInCelsius(float fahrenheit) {
+    float celsius = fahrenheitToCelsius(fahrenheit);
+    int returnCode = sendNetworkAlert(celsius);
+    return returnCode; // Return code to indicate success/failure
 }
 
 int main() {
-    alertInCelcius(400.5);
-    alertInCelcius(303.6);
-    printf("%d alerts failed.\n", alertFailureCount);
+    int alertFailures = 0;
+
+    alertFailures += (alertInCelsius(400.5) != 200);
+    alertFailures += (alertInCelsius(303.6) != 200);
+
+    printf("%d alerts failed.\n", alertFailures);
     printf("All is well (maybe!)\n");
     return 0;
 }
