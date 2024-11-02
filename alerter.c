@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+int alertFailureCount = 0;
+
 // Helper function to convert Fahrenheit to Celsius
 float fahrenheitToCelsius(float fahrenheit) {
     return (fahrenheit - 32) * 5 / 9;
@@ -11,27 +13,28 @@ void logAlert(float celsius) {
     printf("ALERT: Temperature is %.1f Celsius.\n", celsius);
 }
 
-// Function to send network alert
+// Function to send network alert, with simulated failures for testing
 int sendNetworkAlert(float celsius) {
     logAlert(celsius);
-    // Return 200 for ok, 500 for not-ok. Stub always succeeds and returns 200.
-    return 200;
+    // Simulate failure if temperature exceeds 200 Celsius
+    return (celsius > 200.0) ? 500 : 200;
 }
 
 // Main alert function
-int alertInCelsius(float fahrenheit) {
+void alertInCelsius(float fahrenheit) {
     float celsius = fahrenheitToCelsius(fahrenheit);
     int returnCode = sendNetworkAlert(celsius);
-    return returnCode; // Return code to indicate success/failure
+    if (returnCode != 200) {
+        // Increment the count to track actual failures.
+        alertFailureCount += 1;
+    }
 }
 
 int main() {
-    int alertFailures = 0;
-
-    alertFailures += (alertInCelsius(400.5) != 200);
-    alertFailures += (alertInCelsius(303.6) != 200);
-
-    printf("%d alerts failed.\n", alertFailures);
+    alertInCelsius(400.5);  // This should trigger a failure
+    alertInCelsius(303.6);  // This should trigger a failure
+    printf("%d alerts failed.\n", alertFailureCount);
+    assert(alertFailureCount == 2);  // Expecting 2 failures
     printf("All is well (maybe!)\n");
     return 0;
 }
