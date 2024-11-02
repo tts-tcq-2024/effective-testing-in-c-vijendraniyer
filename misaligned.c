@@ -31,4 +31,15 @@ void printAndValidateColorMap(int simulateFailure) {
         for (int j = 0; j < 5; j++) {
             snprintf(buffer, sizeof(buffer), "%d | %s | %s", index, majorColors[i], minorColors[j]);
             printColorPair(index, majorColors[i], minorColors[j]);
-            // Validate each 
+            // Validate each pair matches expected format, with a forced failure at index 5
+            assert(strcmp(buffer, getExpectedColorPair(index, majorColors[i], minorColors[j], simulateFailure)) == 0);
+            index++;
+        }
+    }
+}
+
+int main() {
+    printAndValidateColorMap(1); // Pass 1 to simulate failure
+    printf("All is well (maybe!)\n");
+    return 0;
+}
