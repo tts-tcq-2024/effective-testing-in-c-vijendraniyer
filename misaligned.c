@@ -11,14 +11,19 @@ void printColorPair(int index, const char* majorColor, const char* minorColor) {
 }
 
 // Helper function to retrieve color pair for validation
-const char* getExpectedColorPair(int index, const char* majorColor, const char* minorColor) {
+const char* getExpectedColorPair(int index, const char* majorColor, const char* minorColor, int simulateFailure) {
     static char expectedPair[50];
-    snprintf(expectedPair, sizeof(expectedPair), "%d | %s | %s", index, majorColor, minorColor);
+    // Introduce a forced mismatch to trigger assertion failure
+    if (simulateFailure && index == 5) {
+        snprintf(expectedPair, sizeof(expectedPair), "%d | %s | %s", index, "Mismatch", minorColor);
+    } else {
+        snprintf(expectedPair, sizeof(expectedPair), "%d | %s | %s", index, majorColor, minorColor);
+    }
     return expectedPair;
 }
 
 // Function to print and validate the color map
-void printAndValidateColorMap() {
+void printAndValidateColorMap(int simulateFailure) {
     int index = 0;
     char buffer[50];
 
@@ -26,15 +31,4 @@ void printAndValidateColorMap() {
         for (int j = 0; j < 5; j++) {
             snprintf(buffer, sizeof(buffer), "%d | %s | %s", index, majorColors[i], minorColors[j]);
             printColorPair(index, majorColors[i], minorColors[j]);
-            // Validate each pair matches expected format
-            assert(strcmp(buffer, getExpectedColorPair(index, majorColors[i], minorColors[j])) == 0);
-            index++;
-        }
-    }
-}
-
-int main() {
-    printAndValidateColorMap();
-    printf("All is well (maybe!)\n");
-    return 0;
-}
+            // Validate each 
